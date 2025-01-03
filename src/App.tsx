@@ -26,7 +26,7 @@ export default function App() {
   >([]);
   const [selectedWeekIndex, setSelectedWeekIndex] = useState<number>(0);
   const [chartData, setChartData] = useState<any[]>([]);
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     generateWeeks();
   }, []);
@@ -59,6 +59,9 @@ export default function App() {
   };
 
   const fetchWeeklyDataForWeek = async (selectedTimestamp: Timestamp) => {
+    setLoading(() => {
+      return true;
+    });
     try {
       const startOfWeekDate = selectedTimestamp.toDate();
 
@@ -105,6 +108,9 @@ export default function App() {
           value: updatedData[index],
         }))
       );
+      setLoading(() => {
+        return false;
+      });
     } catch (error) {
       console.error("Error fetching weekly data:", error);
     }
@@ -193,28 +199,37 @@ export default function App() {
           </div>
 
           <div className=" w-full flex  ">
-            <ResponsiveContainer width="100%" height={350}>
-              <LineChart data={chartData}>
-                <CartesianGrid stroke="#adadad" strokeWidth={0.5} />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  dot={{
-                    r: 4,
-                    fill: "#17F9DA",
-                    stroke: "#17F9DA",
-                    strokeWidth: 1,
-                  }}
-                  type="linear"
-                  dataKey="value"
-                  stroke="#17F9DA"
-                  fill="#17F9DA"
-                  fillOpacity={0.3}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {!loading ? (
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={chartData}>
+                  <CartesianGrid stroke="#adadad" strokeWidth={0.5} />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    dot={{
+                      r: 4,
+                      fill: "#17F9DA",
+                      stroke: "#17F9DA",
+                      strokeWidth: 1,
+                    }}
+                    type="linear"
+                    dataKey="value"
+                    stroke="#17F9DA"
+                    fill="#17F9DA"
+                    fillOpacity={0.3}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+             <div className="flex justify-center items-center w-full my-12">
+                <div
+                  className="w-12 h-12 rounded-full animate-spin
+                    border-2 border-solid border-[#3437e8] border-t-transparent"
+                ></div>
+              </div>
+            )}
           </div>
         </div>
       </div>
